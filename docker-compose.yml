@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: postgress_pg
+    image: postgres:16.3
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: superpostgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: postgres
+    ports:
+      - '5000:5432'
+    volumes:
+      - 'postgress_pg_data:/var/lib/postgresql/data'
+
+volumes:
+  postgress_pg_data:

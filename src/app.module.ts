@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ProductsController } from './products/products.controller';
+import { CustomerController } from './modules/customer/controllers/customer.controller';
+import { ProductsController } from './modules/product/controllers/product.controller';
+import { CategoryController } from './modules/category/category.controller';
+import { CartController } from './modules/cart/cart.controller';
+import { OrderController } from './modules/order/order.controller';
 
 @Module({
   imports: [],
-  controllers: [AppController, ProductsController],
-  providers: [AppService],
+  controllers: [ProductsController, CustomerController, CategoryController, CartController, OrderController],
+  providers: [],
 })
-// eslint-disable-next-line prettier/prettier
+
 export class AppModule { }

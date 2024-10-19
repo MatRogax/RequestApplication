@@ -1,9 +1,9 @@
 import { IsDate, IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class AdminDto {
-    @IsNotEmpty()
-    @IsString()
-    id: string;
+    // @IsNotEmpty()
+    // @IsString()
+    // id: string;
 
     @IsNotEmpty()
     @IsString()
@@ -21,7 +21,7 @@ export class AdminDto {
     password: string;
 
     //TODO -> colocar campo updateAt(readonly updatedAt: string;) 
-    @IsNotEmpty()
-    @IsDate()
-    createdAt: Date;
+    // @IsNotEmpty()
+    // @IsDate()
+    // createdAt: Date;
 }

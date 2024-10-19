@@ -9,6 +9,7 @@ import { AdminRepository } from "@repositories/admin.repository";
     imports: [PrismaModule],
     controllers: [AdminController],
     providers: [AdminRepository],
+    exports: [AdminRepository],
 })
 
 export class AdminModule { }

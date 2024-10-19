@@ -1,23 +1,42 @@
+import { UpdateUserDto } from '@dtos/update-user.dto';
 import { UserDto } from '@dtos/user.dto';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 import { UserRepository } from '@repositories/user.repository';
 
-@Controller('customer')
-@ApiTags('customer')
+@Controller('users')
+@ApiTags('user')
 export class UserController {
     constructor(private repository: UserRepository) { }
-
 
     @Post('cadastro')
     async createCustomer(@Body() user: UserDto) {
         const createUser = await this.repository.createUser(user);
-        return createUser;
+        return { message: "Usuário criado com Sucesso", createUser };
 
     }
 
-    @Get('users/:id')
+    @Patch('user/:id')
+    async updateUser(@Param('id') id: string, @Body() data: UpdateUserDto) {
+        const updatedUserData = await this.repository.updateUser(id, data);
+        return { message: "Usuário Atualizado com Sucesso", updatedUserData };
+    }
+
+    @Get('user/:id')
     getUser(@Param('id') id: string) {
-        return this.repository.findById(id);
+        const UserData = this.repository.findById(id);
+        return { message: ` Usuário encontrado com Sucesso`, UserData };
+    }
+    @Get('all')
+    async findAll() {
+        const allUsers = await this.repository.findAll();
+        return allUsers;
+    }
+
+    @Delete('user/:id')
+    async deleteUser(@Param('id') id: string) {
+        await this.repository.deleteUser(id);
+        return { message: `Usuário com ID ${id} foi removido com sucesso.` };
     }
 }

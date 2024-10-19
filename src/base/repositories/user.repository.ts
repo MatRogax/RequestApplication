@@ -4,46 +4,65 @@ import { UserDto } from "@dtos/user.dto";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-//Todo -> Documentar o Service de cliente
-
 @Injectable()
 export class UserRepository {
     constructor(private prismaService: PrismaService) { }
 
     async createUser(user: UserDto): Promise<User> {
-        try {
-            const createdUser = await this.prismaService.user.create({ data: user });
-            return createdUser;
-        } catch (error) {
-            throw new Error(`Erro ao criar o usuário: ${error.message}`);
+        const validEmail = user.email;
+        const validCpf = user.cpf;
+        const validUUI = user.id;
+
+        const existingUser = await this.findFirstUser(validEmail, validCpf, validUUI);
+
+        if (!existingUser) {
+            try {
+                const createdUser = await this.prismaService.user.create({ data: user });
+                return createdUser;
+            } catch (error) {
+                throw new Error(`Erro ao criar o usuário: ${error.message}`);
+            }
+        } else {
+            throw new BadRequestException('usuario já existe');
         }
     }
 
-    async findAll(filters?: any) {
+    async findFirstUser(email?: string, cpf?: string, id?: string): Promise<User | null> {
         try {
-            return await this.prismaService.user.findMany({
-                where: filters,
+            const existingUser = await this.prismaService.user.findFirst({
+                where: {
+                    OR: [
+                        email ? { email } : undefined,
+                        cpf ? { cpf } : undefined,
+                        id ? { id } : undefined,
+                    ],
+                },
             });
+            return existingUser;
+
+        } catch (error) {
+            throw new Error(`Não foi possível verificar se o usuário já existe: ${error.message}`);
+        }
+    }
+    //TODO -> fazer filtro para encontrar todos os semelhantes 
+    async findAll(): Promise<User[]> {
+        try {
+            return await this.prismaService.user.findMany();
         } catch (error) {
             throw new Error(`Não foi possível buscar os usuários: ${error.message}`);
         }
     }
 
     async findById(id: string): Promise<User> {
-        if (!this.isUUID(id)) {
-            throw new BadRequestException('ID fornecido não é válido.');
-        }
 
         const user = await this.prismaService.user.findUnique({
             where: { id },
         });
-
         return user;
     }
 
-
     async updateUser(id: string, UserData: UpdateUserDto): Promise<User> {
-        const existingUser = await this.findById(id);
+        const existingUser = await this.UserExists(id);
 
         if (existingUser) {
             try {
@@ -59,37 +78,27 @@ export class UserRepository {
     }
 
     async deleteUser(id: string): Promise<User> {
-
-        const existingUser = await this.findById(id);
-        try {
-            const deleteUser = await this.prismaService.user.delete({ where: { id: existingUser.id } });
-            return deleteUser;
-        } catch (error) {
-            throw new BadRequestException(`Erro ao deletar o cliente: ${error.message}`);
+        const existingUser = await this.UserExists(id);
+        if (existingUser) {
+            try {
+                const deleteUser = await this.prismaService.user.delete({ where: { id: id } });
+                return deleteUser;
+            } catch (error) {
+                throw new BadRequestException(`Erro ao deletar o cliente: ${error.message}`);
+            }
         }
-
     }
 
-    private isUUID(id: string): boolean {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    async UserExists(id: string): Promise<boolean> {
+        let validExistUser = false;
+        const userStatus = await this.findById(id);
 
-        const isValid = uuidRegex.test(id);
-        if (!isValid) {
-            console.warn(`ID fornecido não é um UUID válido: ${id}`);
+        if (userStatus) {
+            validExistUser = true;
+        } else {
+            throw new NotFoundException("Usuário não existe");
         }
-
-        return isValid;
-    }
-
-
-    async UserExists(id: string): Promise<User | never> {
-        const user = await this.findById(id);
-
-        if (!user) {
-            throw new NotFoundException(`usuário ${id} não foi encontrado`);
-        }
-
-        return user;
+        return validExistUser;
     }
 
 }

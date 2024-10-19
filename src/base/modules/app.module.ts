@@ -1,14 +1,11 @@
-import { AdminController } from '@controllers/admin.controller';
-import { CartController } from '@controllers/cart.controller';
-import { CategoryController } from '@controllers/category.controller';
-import { OrderController } from '@controllers/order.controller';
-import { ProductsController } from '@controllers/product.controller';
-import { UserController } from '@controllers/user.controller';
 import { Module } from '@nestjs/common';
+import { UserModule } from '@modules/user.module';
+import { PrismaModule } from '@modules/prisma.module';
+import { AdminModule } from '@modules/admin.module';
 
 @Module({
-  imports: [],
-  controllers: [ProductsController, UserController, CategoryController, CartController, OrderController, AdminController],
+  imports: [AdminModule, UserModule, PrismaModule],
+  controllers: [],
   providers: [],
 })
 

@@ -16,6 +16,19 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@controllers/*": ["src/base/controllers/*"],
+      "@database/*": ["src/base/database/*"],
+      "@modules/*": ["src/base/modules/*"],
+      "@repositories/*": ["src/base/repositories/*"],
+      "@services/*": ["src/base/services/*"],
+      "@dtos/*": ["src/common/dtos/*"],
+      "@pipes/*": ["src/common/pipes/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@utils": ["src/common/utils/utils.ts"],
+      "@/*": ["src/*"]
+    }
   }
 }

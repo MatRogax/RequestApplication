@@ -11,9 +11,9 @@ export class UserRepository {
     async createUser(user: UserDto): Promise<User> {
         const validEmail = user.email;
         const validCpf = user.cpf;
-        const validUUI = user.id;
+        // const validUUI = user.id;
 
-        const existingUser = await this.findFirstUser(validEmail, validCpf, validUUI);
+        const existingUser = await this.findFirstUser(validEmail, validCpf);
 
         if (!existingUser) {
             try {
@@ -34,7 +34,7 @@ export class UserRepository {
                     OR: [
                         email ? { email } : undefined,
                         cpf ? { cpf } : undefined,
-                        id ? { id } : undefined,
+                        // id ? { id } : undefined,
                     ],
                 },
             });

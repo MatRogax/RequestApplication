@@ -1,66 +1,66 @@
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CategoryDto } from '@dtos/category.dto';
 import { UpdateCategoryDto } from '@dtos/update-category';
-import { Body, Controller, Delete, Get, Headers, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { CategoryRepository } from '@repositories/category.repository';
+import { Category } from '@prisma/client';
+import { AuthGuard } from '@guards/auth.guard';
 
-@Controller('categories')
-@ApiTags('category')
+@ApiTags('Category')
+@UseGuards(AuthGuard)
+@Controller('category')
 export class CategoryController {
-    constructor(private readonly repository: CategoryRepository) { }
+    constructor(private readonly categoryRepository: CategoryRepository) { }
 
-    /**
-     * Cria uma nova categoria
-     * @param data - Dados da categoria a ser criada
-     * @returns Mensagem de sucesso e os dados da categoria criada
-     */
-    @Post('cadastro')
-    async createCategory(@Body() data: CategoryDto) {
-        const createdCategory = await this.repository.createCategory(data);
+    @Post('create')
+    @ApiOperation({ summary: 'Cria uma nova categoria' })
+    @ApiBody({ type: CategoryDto })
+    @ApiResponse({ status: 201, description: 'Categoria criada com sucesso.', type: Promise<Category> })
+    @ApiResponse({ status: 400, description: 'Erro ao criar a categoria ou categoria já existente.' })
+    async createCategory(@Body() category: CategoryDto) {
+        const createdCategory = await this.categoryRepository.createCategory(category);
         return { message: "Categoria Cadastrada com Sucesso", createdCategory };
     }
 
-    /**
-     * Busca uma categoria pelo ID
-     * @param id - ID da categoria
-     * @returns Mensagem de sucesso e os dados da categoria encontrada
-     */
-    @Get('categorie/:id')
-    async getCategory(@Param('id') id: number) {
-        const categoryData = await this.repository.findCategoryById(id);
+    @Get('especific/:id')
+    @ApiOperation({ summary: 'Busca uma categoria pelo ID' })
+    @ApiParam({ name: 'id', type: String, description: 'ID da categoria a ser buscada' })
+    @ApiResponse({ status: 200, description: 'Categoria encontrada.', type: CategoryDto })
+    @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+    async getCategory(@Param('id') id: string) {
+        const categoryData = await this.categoryRepository.findCategoryById(parseInt(id));
         return { message: "Categoria Encontrada", categoryData };
     }
 
-    /**
-     * Busca todas as categorias
-     * @returns Lista de todas as categorias
-     */
     @Get('all')
+    @ApiOperation({ summary: 'Busca todas as categorias' })
+    @ApiResponse({ status: 200, description: 'Lista de todas as categorias.', type: [CategoryDto] })
+    @ApiResponse({ status: 500, description: 'Erro ao buscar as categorias.' })
     async getAllCategories() {
-        const categories = await this.repository.findAllCategories();
+        const categories = await this.categoryRepository.findAllCategories();
         return categories;
     }
 
-    /**
-     * Atualiza os dados de uma categoria existente
-     * @param id - ID da categoria a ser atualizada
-     * @param data - Dados atualizados da categoria
-     * @returns Mensagem de sucesso e os dados da categoria atualizada
-     */
-    @Patch('categorie/:id')
-    async updateCategory(@Param('id') id: number, @Body() data: UpdateCategoryDto) {
-        const updatedCategoryData = await this.repository.updateCategory(id, data);
+    @Patch('especific/:id')
+    @ApiOperation({ summary: 'Atualiza uma categoria' })
+    @ApiParam({ name: 'id', type: String, description: 'ID da categoria a ser atualizada' })
+    @ApiBody({ type: UpdateCategoryDto })
+    @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso.', type: CategoryDto })
+    @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+    @ApiResponse({ status: 400, description: 'Erro ao atualizar a categoria.' })
+    async updateCategory(@Param('id') id: string, @Body() updateCategory: UpdateCategoryDto) {
+        const updatedCategoryData = await this.categoryRepository.updateCategory(parseInt(id), updateCategory);
         return { message: "Categoria Atualizada com Sucesso", updatedCategoryData };
     }
 
-    /**
-     * Deleta uma categoria pelo ID
-     * @param id - ID da categoria a ser deletada
-     * @returns Mensagem de sucesso e os dados da categoria deletada
-     */
-    @Delete('categorie/:id')
-    async deleteCategory(@Param('id') id: number) {
-        const deletedCategory = await this.repository.deleteCategory(id);
-        return { message: `Categoria com nome ${deletedCategory.name} foi removida com sucesso.` };
+    @Delete('especific/:id')
+    @ApiOperation({ summary: 'Deleta uma categoria' })
+    @ApiParam({ name: 'id', type: String, description: 'ID da categoria a ser deletada' })
+    @ApiResponse({ status: 200, description: 'Categoria deletada com sucesso.', type: CategoryDto })
+    @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+    @ApiResponse({ status: 400, description: 'Erro ao deletar a categoria.' })
+    async deleteCategory(@Param('id') id: string) {
+        const deletedCategory = await this.categoryRepository.deleteCategory(parseInt(id));
+        return { message: `Categoria ${deletedCategory.name} foi removida com sucesso.` };
     }
 }

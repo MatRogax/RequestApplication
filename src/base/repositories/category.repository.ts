@@ -38,44 +38,43 @@ export class CategoryRepository {
     }
 
     async updateCategory(id: number, updateData: UpdateCategoryDto): Promise<Category> {
-        const existingCategory = await this.categoryExists(id);
+        await this.categoryExists(id);
 
-        if (existingCategory) {
-            try {
-                const updatedCategory = await this.prisma.category.update({
-                    where: { id },
-                    data: updateData,
-                });
-                return updatedCategory;
-            } catch (error) {
-                throw new BadRequestException(`Erro ao atualizar categoria: ${error.message}`);
-            }
+        try {
+            const updatedCategory = await this.prisma.category.update({
+                where: { id },
+                data: updateData,
+            });
+            return updatedCategory;
+        } catch (error) {
+            throw new BadRequestException(`Erro ao atualizar categoria: ${error.message}`);
         }
     }
 
     async deleteCategory(id: number): Promise<Category> {
-        const existingCategory = await this.categoryExists(id);
+        await this.categoryExists(id);
 
-        if (existingCategory) {
-            try {
-                const deletedCategory = await this.prisma.category.delete({
-                    where: { id },
-                });
-                return deletedCategory;
-            } catch (error) {
-                throw new BadRequestException(`Erro ao deletar categoria: ${error.message}`);
-            }
+        try {
+            const deletedCategory = await this.prisma.category.delete({
+                where: { id },
+            });
+            return deletedCategory;
+        } catch (error) {
+            throw new BadRequestException(`Erro ao deletar categoria: ${error.message}`);
         }
     }
 
-    async findCategoryById(id: number): Promise<Category | null> {
+    async findCategoryById(id: number): Promise<Category> {
         try {
             const category = await this.prisma.category.findUnique({
                 where: { id },
             });
+            if (!category) {
+                throw new NotFoundException(`Categoria não encontrada`);
+            }
             return category;
         } catch (error) {
-            throw new NotFoundException(`Categoria não encontrada: ${error.message}`);
+            throw new InternalServerErrorException(`Erro ao buscar a categoria: ${error.message}`);
         }
     }
 
@@ -90,11 +89,12 @@ export class CategoryRepository {
 
     async categoryExists(id: number): Promise<boolean> {
         const category = await this.findCategoryById(id);
-
+        let validatorExistCategory: boolean;
         if (category) {
-            return true;
+            validatorExistCategory = true;
         } else {
-            throw new NotFoundException('Categoria não existe');
+            validatorExistCategory = false;
         }
+        return validatorExistCategory;
     }
 }

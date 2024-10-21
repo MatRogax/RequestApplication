@@ -9,7 +9,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('E-commerce API')
-    .setDescription('API para gerenciamento do e-commerce')
+    .setDescription('API para gerenciamento do e-commerce de supermercado')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

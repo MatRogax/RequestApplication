@@ -29,13 +29,13 @@ export class AdminRepository {
         }
     }
 
-    async findFirstAdmin(email?: string, cpf?: string, id?: string): Promise<Admin | null> {
+    async findFirstAdmin(email?: string, id?: string): Promise<Admin | null> {
         try {
             const existingAdmin = await this.prisma.admin.findFirst({
                 where: {
                     AND: [
                         email ? { email } : undefined,
-                        id ? { id } : undefined,
+                        // id ? { id } : undefined,
                     ],
                 },
             });

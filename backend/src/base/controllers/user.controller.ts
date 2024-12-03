@@ -19,8 +19,7 @@ export class UserController {
         return { message: "Usuário criado com Sucesso", createUser };
 
     }
-    @Patch('user/:id')
-    @UseGuards(AuthGuard)
+    @Patch(':id')
     @ApiOperation({ summary: 'Atualizar um usuário existente' })
     @ApiParam({ name: 'id', required: true, description: 'ID do usuário a ser atualizado' })
     @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso', type: UserDto })
@@ -30,8 +29,8 @@ export class UserController {
         return { message: "Usuário Atualizado com Sucesso", updatedUserData };
     }
 
-    @Get('user/:id')
-    @UseGuards(AuthGuard)
+    @Get(':id')
+    // @UseGuards(AuthGuard)
     @ApiOperation({ summary: 'Obter detalhes de um usuário' })
     @ApiParam({ name: 'id', required: true, description: 'ID do usuário' })
     @ApiResponse({ status: 200, description: 'Usuário encontrado com sucesso', type: UserDto })

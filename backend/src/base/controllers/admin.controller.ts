@@ -18,7 +18,7 @@ import { AdminRepository } from '@repositories/admin.repository';
 @Controller('admins')
 @ApiTags('admin')
 export class AdminController {
-  constructor(private readonly repository: AdminRepository) {}
+  constructor(private readonly repository: AdminRepository) { }
 
   @Post('cadastro')
   @ApiOperation({ summary: 'Cadastrar um novo administrador' })
@@ -33,8 +33,8 @@ export class AdminController {
     return { message: 'Administrador Cadastrado com Sucesso', createdAdmin };
   }
 
-  @Get('admin/:id')
-  @UseGuards(AuthGuard)
+  @Get(':id')
+  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Obter detalhes de um administrador' })
   @ApiParam({ name: 'id', required: true, description: 'ID do administrador' })
   @ApiResponse({
@@ -49,7 +49,7 @@ export class AdminController {
   }
 
   @Get('all')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Obter todos os administradores' })
   @ApiResponse({
     status: 200,
@@ -63,7 +63,7 @@ export class AdminController {
 
   //TODO -> fazer pipe para validação dos dados que estao sendo atualizados
   @Patch('admin/:id')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Atualizar um administrador existente' })
   @ApiParam({
     name: 'id',
@@ -85,7 +85,7 @@ export class AdminController {
   }
 
   @Delete('admin/:id')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Deletar um administrador' })
   @ApiParam({
     name: 'id',
